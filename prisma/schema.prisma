@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int        @id @default(autoincrement())
+  full_name      String
+  email          String     @unique
+  password_hash  String
+  role           String     // "STUDENT" | "PROFESSOR"
+  email_verified Boolean    @default(true)
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+
+  professor      Professor?
+
+  @@map("users")
+}
+
+model Department {
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  professors Professor[]
+
+  @@map("departments")
+}
+
+model Professor {
+  id             Int                  @id @default(autoincrement())
+  user_id        Int                  @unique
+  faculty_id     String               @unique
+  department_id  Int
+  designation    String
+  contact_number String
+  office_hours   String
+  profile_image  String?
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+
+  user           User                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  department     Department           @relation(fields: [department_id], references: [id])
+  assignment     ProfessorAssignment?
+  availability   Availability?
+  schedules      ClassSchedule[]
+
+  @@map("professors")
+}
+
+model Room {
+  id          Int     @id @default(autoincrement())
+  room_number Int     @unique
+  cabins      Cabin[]
+
+  @@map("rooms")
+}
+
+model Cabin {
+  id           Int     @id @default(autoincrement())
+  room_id      Int
+  cabin_letter String
+  room         Room    @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  tables       Table[]
+
+  @@unique([room_id, cabin_letter])
+  @@map("cabins")
+}
+
+model Table {
+  id           Int                  @id @default(autoincrement())
+  cabin_id     Int
+  table_number Int
+  cabin        Cabin                @relation(fields: [cabin_id], references: [id], onDelete: Cascade)
+  assignment   ProfessorAssignment?
+
+  @@unique([cabin_id, table_number])
+  @@map("tables")
+}
+
+model ProfessorAssignment {
+  id            Int       @id @default(autoincrement())
+  professor_id  Int       @unique
+  table_id      Int       @unique
+  is_active     Boolean   @default(true)
+  assigned_at   DateTime  @default(now())
+  unassigned_at DateTime?
+
+  professor     Professor @relation(fields: [professor_id], references: [id], onDelete: Cascade)
+  table         Table     @relation(fields: [table_id], references: [id], onDelete: Cascade)
+
+  @@map("professor_assignments")
+}
+
+model Availability {
+  id           Int       @id @default(autoincrement())
+  professor_id Int       @unique
+  is_available Boolean
+  last_updated DateTime  @default(now())
+  updated_by   String
+
+  professor    Professor @relation(fields: [professor_id], references: [id], onDelete: Cascade)
+
+  @@map("availability")
+}
+
+model ClassSchedule {
+  id           Int       @id @default(autoincrement())
+  professor_id Int
+  day_of_week  String
+  start_time   String
+  end_time     String
+  subject      String
+  section      String
+  classroom    String
+
+  professor    Professor @relation(fields: [professor_id], references: [id], onDelete: Cascade)
+
+  @@map("class_schedules")
+}
