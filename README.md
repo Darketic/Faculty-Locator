@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Faculty Locator & Cabin Availability Management System
 **Manipal University Jaipur — Software Engineering Project**
 
@@ -305,3 +306,7 @@ npm test
 - **SMS / Email Alerts:** Push notifications via email when a professor marks themselves available could be added.
 - **Live WebSocket Streaming:** While 10–12 second HTTP polling is lightweight and reliable, WebSockets or Server-Sent Events (SSE) can be introduced for zero-latency updates.
 - **Biometric / RFID Check-In:** Hardware door sensor integration could automatically mark professors available when entering their cabins.
+=======
+# Faculty-Locator
+muj faculty locator
+>>>>>>> 003b27fdf03d2410841b9596a48f06f3b832b044
